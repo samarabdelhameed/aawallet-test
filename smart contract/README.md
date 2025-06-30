@@ -1,125 +1,17 @@
-## Foundry
-
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
-
-Foundry consists of:
-
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
-
-# SimpleAccount Project
-
-This project demonstrates deploying and verifying a minimal ERC-4337-style Account contract on Sepolia testnet using Foundry.
-
-## How to Deploy and Verify
-
-1. **Deploy the contract:**
-
-   ```sh
-   forge script script/SimpleAccount.s.sol:SimpleAccountScript --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast
-   ```
-
-2. **Verify the contract on Etherscan:**
-   ```sh
-   forge verify-contract 0xF45C3cC65C342CD316970F72E4C835CAC0533010 src/SimpleAccount.sol:SimpleAccount --chain-id 11155111 --etherscan-api-key Y4M2C2HCBP7IMBWIUB79X6IJWHMAZ6U663 --compiler-version v0.8.30+commit.5feceb7b --constructor-args 00000000000000000000000014D7795A2566Cd16eaA1419A26ddB643CE523655
-   ```
-
-**Verification Output:**
-
-```
-Start verifying contract `0xF45C3cC65C342CD316970F72E4C835CAC0533010` deployed on sepolia
-Compiler version: v0.8.30+commit.5feceb7b
-Constructor args: 00000000000000000000000014D7795A2566Cd16eaA1419A26ddB643CE523655
-
-Submitting verification for [src/SimpleAccount.sol:SimpleAccount] 0xF45C3cC65C342CD316970F72E4C835CAC0533010.
-Submitted contract for verification:
-        Response: `OK`
-        GUID: `zhcbdvc4gwquhxtj7qujepcwgykh2exbcdfr4rnmjkjcrwwihr`
-        URL: https://sepolia.etherscan.io/address/0xf45c3cc65c342cd316970f72e4c835cac0533010
-```
-
----
-
-## شرح مختصر بالعربي
-
-- إذا واجهت مشكلة في التحقق على Etherscan، تأكد من تمرير معاملات الـ constructor بشكل صحيح كما في الأمر أعلاه.
-- انتظر دقيقة أو اثنتين بعد التحقق ثم حدّث صفحة العقد على Etherscan.
-- إذا لم يظهر الكود، أعد تنفيذ أمر التحقق مع معاملات الـ constructor.
-
----
-
 **Contact:** samarabdelhameed
 
 # ERC-4337 Simple Account Wallet
 
-A professional implementation of an ERC-4337 Account Abstraction wallet using Foundry. This project provides a complete wallet solution with EntryPoint, AccountFactory, and SimpleAccount contracts.
+A professional, production-ready implementation of an ERC-4337 Account Abstraction wallet using Foundry. This project provides a complete wallet solution with EntryPoint, AccountFactory, and SimpleAccount contracts, all fully ERC-4337-compliant and tested.
 
 ## 🚀 Features
 
-- **Account Abstraction**: Full ERC-4337 compliance
-- **Simple Account**: Easy-to-use wallet implementation
-- **Account Factory**: Automated account creation
-- **EntryPoint**: Standard ERC-4337 entry point
-- **Gasless Transactions**: Support for sponsored transactions
-- **Modular Design**: Clean, maintainable codebase
+- **Full ERC-4337 Compliance**: All contracts follow the official ERC-4337 spec, including signature and nonce validation, UserOperation struct, and event emission.
+- **Professional EntryPoint**: Implements handleOps, simulateValidation, deposit/withdraw, and full UserOperation execution logic.
+- **SimpleAccount**: Real signature validation using OpenZeppelin ECDSA, nonce management, and secure execution.
+- **AccountFactory**: Deterministic account creation, compatible with ERC-4337 flows.
+- **Modular Interfaces**: Includes IEntryPoint and ISimpleAccount interfaces for extensibility.
+- **Comprehensive Test Suite**: All contracts are covered by realistic, professional tests using Foundry.
 
 ## 📋 Prerequisites
 
@@ -161,35 +53,34 @@ A professional implementation of an ERC-4337 Account Abstraction wallet using Fo
 ```
 smart-contract/
 ├── src/
-│   ├── EntryPoint.sol          # ERC-4337 EntryPoint contract
+│   ├── EntryPoint.sol          # ERC-4337 EntryPoint contract (full logic)
 │   ├── AccountFactory.sol      # Account factory for creating wallets
-│   └── SimpleAccount.sol       # Simple account implementation
+│   ├── SimpleAccount.sol       # Simple account implementation (real signature/nonce validation)
+│   ├── IEntryPoint.sol         # ERC-4337 interface
+│   └── ISimpleAccount.sol      # Interface for account contracts
 ├── script/
 │   ├── EntryPoint.s.sol        # EntryPoint deployment script
 │   ├── AccountFactory.s.sol    # AccountFactory deployment script
 │   └── SimpleAccount.s.sol     # SimpleAccount deployment script
 ├── test/
 │   ├── EntryPoint.t.sol        # EntryPoint tests
+│   ├── EntryPointProfessional.t.sol # Professional EntryPoint tests
 │   ├── AccountFactory.t.sol    # AccountFactory tests
-│   └── SimpleAccount.t.sol     # SimpleAccount tests
+│   └── SimpleAccount.t.sol     # SimpleAccount tests (real signature/nonce)
 └── foundry.toml               # Foundry configuration
 ```
 
-## 🧪 Testing
+## 🧪 Professional Test Suite
+
+All contracts are covered by a comprehensive, realistic test suite using Foundry. Tests include:
+
+- Signature and nonce validation
+- UserOperation struct and hash logic
+- Full handleOps execution
+- Account creation and execution flows
+- Failure scenarios and revert reasons
 
 Run all tests:
-
-```bash
-forge test
-```
-
-Run specific test file:
-
-```bash
-forge test --match-contract SimpleAccount
-```
-
-Run tests with verbose output:
 
 ```bash
 forge test -vvv
@@ -303,12 +194,12 @@ SimpleAccount account = SimpleAccount(accountAddress);
 account.execute(target, value, data);
 ```
 
-## 🔒 Security Considerations
+## 🔒 Security & Best Practices
 
-- **Private Key Management**: Never commit private keys to version control
-- **Access Control**: Implement proper access controls for account operations
-- **Validation**: Always validate UserOperations before execution
-- **Testing**: Comprehensive test coverage for all critical functions
+- **OpenZeppelin ECDSA** is used for signature recovery and validation.
+- **ISimpleAccount** interface ensures compatibility for any custom account logic.
+- **All critical logic is covered by tests**.
+- **No placeholder code**: all logic is real and production-ready.
 
 ## 🤝 Contributing
 
