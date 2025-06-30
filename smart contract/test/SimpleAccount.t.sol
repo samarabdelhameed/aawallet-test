@@ -8,20 +8,22 @@ contract SimpleAccountTest is Test {
     SimpleAccount public account;
     address public owner = address(0x123);
     address public user = address(0x456);
+    address public entryPoint;
 
     function setUp() public {
-        account = new SimpleAccount(owner);
+        entryPoint = address(this); // للاختبار فقط
+        account = new SimpleAccount(owner, entryPoint);
     }
 
     function test_Constructor() public {
         assertEq(account.owner(), owner);
+        assertEq(account.entryPoint(), entryPoint);
     }
 
     function test_ValidateUserOp() public {
         bytes memory userOp = "";
         bytes32 userOpHash = bytes32(0);
         uint256 missingAccountFunds = 0;
-
         uint256 result = account.validateUserOp(
             userOp,
             userOpHash,
@@ -30,12 +32,11 @@ contract SimpleAccountTest is Test {
         assertEq(result, 0);
     }
 
-    function test_Execute_OnlyOwner() public {
+    function test_Execute_OnlyEntryPoint() public {
         address dest = address(0x789);
         uint256 value = 0;
         bytes memory func = "";
-
-        // Should fail when called by non-owner
+        // يجب أن يفشل إذا لم يكن entryPoint
         vm.prank(user);
         vm.expectRevert();
         account.execute(dest, value, func);
@@ -45,9 +46,8 @@ contract SimpleAccountTest is Test {
         address dest = address(0x789);
         uint256 value = 0;
         bytes memory func = "";
-
-        // Should succeed when called by owner
-        vm.prank(owner);
+        // يجب أن ينجح إذا كان entryPoint
+        vm.prank(entryPoint);
         account.execute(dest, value, func);
     }
 }

@@ -12,14 +12,16 @@ contract SimpleAccountScript is Script {
     function run() public {
         // Get the deployer address
         address deployer = vm.addr(vm.envUint("PRIVATE_KEY"));
+        address entryPoint = deployer; // مؤقتاً، يمكن تغييره لاحقاً
 
         vm.startBroadcast();
 
         // Deploy the SimpleAccount with the deployer as owner
-        account = new SimpleAccount(deployer);
+        account = new SimpleAccount(deployer, entryPoint);
 
         console.log("SimpleAccount deployed at:", address(account));
         console.log("Owner set to:", deployer);
+        console.log("EntryPoint set to:", entryPoint);
 
         vm.stopBroadcast();
     }
