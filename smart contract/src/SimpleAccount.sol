@@ -15,10 +15,14 @@ contract SimpleAccount {
     }
 
     function validateUserOp(
-        bytes calldata userOp,
-        bytes32 userOpHash,
-        uint256 missingAccountFunds
-    ) external view returns (uint256) {
+        bytes calldata _userOp,
+        bytes32 _userOpHash,
+        uint256 _missingAccountFunds
+    ) external pure returns (uint256) {
+        // Unused parameters - prefixed with underscore to suppress warnings
+        _userOp;
+        _userOpHash;
+        _missingAccountFunds;
         return 0;
     }
 
