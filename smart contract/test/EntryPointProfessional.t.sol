@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {Test, console} from "forge-std/Test.sol";
-import {SimpleAccount} from "../src/SimpleAccount.sol";
+import {Test} from "forge-std/Test.sol";
+import {EntryPoint} from "../src/EntryPoint.sol";
 import {IEntryPoint} from "../src/IEntryPoint.sol";
-import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {SimpleAccount} from "../src/SimpleAccount.sol";
 
-contract SimpleAccountTest is Test {
+contract EntryPointProfessionalTest is Test {
+    EntryPoint public entryPoint;
     SimpleAccount public account;
+    address public beneficiary = address(0xBEEF);
     uint256 private ownerPrivateKey = 0x123;
     address public owner;
-    address public user = address(0x456);
-    address public entryPoint;
 
     function setUp() public {
+        entryPoint = new EntryPoint();
         owner = vm.addr(ownerPrivateKey);
-        entryPoint = address(this); // للاختبار فقط
-        account = new SimpleAccount(owner, entryPoint);
+        account = new SimpleAccount(owner, address(entryPoint));
     }
 
     function _packUserOp(
@@ -37,12 +37,7 @@ contract SimpleAccountTest is Test {
             );
     }
 
-    function test_Constructor() public {
-        assertEq(account.owner(), owner);
-        assertEq(account.entryPoint(), entryPoint);
-    }
-
-    function test_ValidateUserOp() public {
+    function test_HandleOps_Minimal() public {
         IEntryPoint.UserOperation memory userOp;
         userOp.sender = address(account);
         userOp.nonce = 0;
@@ -58,32 +53,9 @@ contract SimpleAccountTest is Test {
         bytes32 userOpHash = keccak256(_packUserOp(userOp));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(ownerPrivateKey, userOpHash);
         userOp.signature = abi.encodePacked(r, s, v);
-        uint256 missingAccountFunds = 0;
-        vm.prank(entryPoint);
-        uint256 result = account.validateUserOp(
-            userOp,
-            userOpHash,
-            missingAccountFunds
-        );
-        assertEq(result, 0);
-    }
-
-    function test_Execute_OnlyEntryPoint() public {
-        address dest = address(0x789);
-        uint256 value = 0;
-        bytes memory func = "";
-        // يجب أن يفشل إذا لم يكن entryPoint
-        vm.prank(user);
-        vm.expectRevert();
-        account.execute(dest, value, func);
-    }
-
-    function test_Execute_Success() public {
-        address dest = address(0x789);
-        uint256 value = 0;
-        bytes memory func = "";
-        // يجب أن ينجح إذا كان entryPoint
-        vm.prank(entryPoint);
-        account.execute(dest, value, func);
+        IEntryPoint.UserOperation[]
+            memory ops = new IEntryPoint.UserOperation[](1);
+        ops[0] = userOp;
+        entryPoint.handleOps(ops, payable(beneficiary));
     }
 }

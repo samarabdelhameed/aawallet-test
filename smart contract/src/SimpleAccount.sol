@@ -1,28 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-interface IEntryPoint {
-    // EntryPoint interface functions can be added here
-}
+import {IEntryPoint} from "./IEntryPoint.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract SimpleAccount {
     address public owner;
     address public entryPoint;
+    uint256 public nonce;
 
     constructor(address _owner, address _entryPoint) {
         owner = _owner;
         entryPoint = _entryPoint;
+        nonce = 0;
     }
 
     function validateUserOp(
-        bytes calldata _userOp,
-        bytes32 _userOpHash,
-        uint256 _missingAccountFunds
-    ) external pure returns (uint256) {
-        // Unused parameters - prefixed with underscore to suppress warnings
-        _userOp;
-        _userOpHash;
-        _missingAccountFunds;
+        IEntryPoint.UserOperation calldata userOp,
+        bytes32 userOpHash,
+        uint256 /* missingAccountFunds */
+    ) external returns (uint256) {
+        require(msg.sender == entryPoint, "Not EntryPoint");
+        require(userOp.nonce == nonce, "Invalid nonce");
+        // Verify signature
+        address recovered = ECDSA.recover(userOpHash, userOp.signature);
+        require(recovered == owner, "Invalid signature");
+        nonce++;
         return 0;
     }
 
