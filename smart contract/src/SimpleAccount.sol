@@ -7,12 +7,12 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 contract SimpleAccount {
     address public owner;
     address public entryPoint;
-    uint256 public nonce;
+    uint256 private _nonce;
 
     constructor(address _owner, address _entryPoint) {
         owner = _owner;
         entryPoint = _entryPoint;
-        nonce = 0;
+        _nonce = 0;
     }
 
     function validateUserOp(
@@ -21,11 +21,11 @@ contract SimpleAccount {
         uint256 /* missingAccountFunds */
     ) external returns (uint256) {
         require(msg.sender == entryPoint, "Not EntryPoint");
-        require(userOp.nonce == nonce, "Invalid nonce");
+        require(userOp.nonce == _nonce, "Invalid nonce");
         // Verify signature
         address recovered = ECDSA.recover(userOpHash, userOp.signature);
         require(recovered == owner, "Invalid signature");
-        nonce++;
+        _nonce++;
         return 0;
     }
 
@@ -37,5 +37,9 @@ contract SimpleAccount {
         require(msg.sender == entryPoint, "Not EntryPoint");
         (bool success, ) = dest.call{value: value}(func);
         require(success, "Call failed");
+    }
+
+    function nonce() public view returns (uint256) {
+        return _nonce;
     }
 }
