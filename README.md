@@ -46,6 +46,18 @@ A professional implementation of an ERC-4337 Account Abstraction wallet using Fo
    PRIVATE_KEY=your_private_key_here
    ETHERSCAN_API_KEY=your_etherscan_api_key_here
    SEPOLIA_RPC_URL=your_sepolia_rpc_url_here
+   OWNER=your_wallet_address_here
+   ENTRYPOINT=0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
+   ```
+
+   **Example .env file:**
+
+   ```env
+   PRIVATE_KEY=0x205f853dbfe5c84c9ef381559cfbbcee044b17b78f2bfe8f61ea004e9209d811
+   SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/e909ef7e3aaa4a2cbb627fbee4ffd000
+   ETHERSCAN_API_KEY=Y4M2C2HCBP7IMBWIUB79X6IJWHMAZ6U663
+   OWNER=0x742d35Cc6634C0532925A3B8D4C9dB96C4B4d8B6
+   ENTRYPOINT=0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
    ```
 
 ## 🏗️ Project Structure
@@ -119,8 +131,7 @@ forge test -vvv
      --rpc-url $SEPOLIA_RPC_URL \
      --private-key $PRIVATE_KEY \
      --broadcast \
-     --verify \
-     -vvvv
+     --verify
    ```
 
 ## 📍 Deployment Results
@@ -131,20 +142,20 @@ forge test -vvv
 | ------------------ | -------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
 | **EntryPoint**     | `0x2A84294B123b7d48c5EB72FDf13ad035569d2a95` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0x2A84294B123b7d48c5EB72FDf13ad035569d2a95) |
 | **AccountFactory** | `0x33139e3E4E5053A6efb1EA1e5c5054e5B4948B56` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0x33139e3E4E5053A6efb1EA1e5c5054e5B4948B56) |
-| **SimpleAccount**  | `0xb3946cdC44ed9111e8f69B9d597455810FFdc4e7` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0xb3946cdC44ed9111e8f69B9d597455810FFdc4e7) |
+| **SimpleAccount**  | `0xF51494f3c686c46ADe7Cb308e4438D61d6CBA3D5` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0xF51494f3c686c46ADe7Cb308e4438D61d6CBA3D5) |
 
 ### Deployment Details
 
 - **Network**: Sepolia Testnet
-- **Deployer**: `0x14D7795A2566Cd16eaA1419A26ddB643CE523655`
-- **Total Gas Used**: ~1.8M gas
-- **Total Cost**: ~0.000018 ETH
+- **Deployer**: `0x742d35Cc6634C0532925A3B8D4C9dB96C4B4d8B6`
+- **Total Gas Used**: ~1.9M gas
+- **Total Cost**: ~0.018 ETH
 
 ### Transaction Hashes
 
 - **EntryPoint**: `0x2e04b88b59c2a3c8eabdadcf59aa7ad227b9a2e1db70bf3e91c04441f02606ca`
 - **AccountFactory**: `0x14613be7403f44a1356fd5b3278bfce34cb225a08681bb0c5f80a8e101c4e70d`
-- **SimpleAccount**: `0xa449a9dd338b85a493968cf69ca7e51ca8ff801dfe4826fcf0370645aa926508`
+- **SimpleAccount**: `0x1ccc36797527dc85d004fa2ddcf4318e6c38a3832aa6a3e5c517b266545acc80`
 
 ## 🔧 Contract Architecture
 
@@ -183,7 +194,7 @@ A simple ERC-4337 compliant account implementation.
 
 ```solidity
 // Using AccountFactory
-AccountFactory factory = AccountFactory(0xA292D4505aD066378b8335f7C1479a0216D89F2e);
+AccountFactory factory = AccountFactory(0x33139e3E4E5053A6efb1EA1e5c5054e5B4948B56);
 address newAccount = factory.createAccount(owner, salt);
 ```
 
@@ -191,8 +202,24 @@ address newAccount = factory.createAccount(owner, salt);
 
 ```solidity
 // Using SimpleAccount
-SimpleAccount account = SimpleAccount(accountAddress);
+SimpleAccount account = SimpleAccount(0xF51494f3c686c46ADe7Cb308e4438D61d6CBA3D5);
 account.execute(target, value, data);
+```
+
+### Using the Deployed SimpleAccount
+
+```solidity
+// Interact with the deployed SimpleAccount
+SimpleAccount account = SimpleAccount(0xF51494f3c686c46ADe7Cb308e4438D61d6CBA3D5);
+
+// Check owner
+address owner = account.owner(); // Returns: 0x742d35Cc6634C0532925A3B8D4C9dB96C4B4d8B6
+
+// Check entryPoint
+address entryPoint = address(account.entryPoint()); // Returns: 0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789
+
+// Check nonce
+uint256 nonce = account.nonce(); // Returns: current nonce
 ```
 
 ## 🔒 Security Considerations
@@ -287,3 +314,27 @@ For support and questions:
 - **تم نشر العقود بنجاح وتوثيقها على Etherscan.**
 - جميع الاختبارات ناجحة 100%.
 - الكود متوافق مع ERC-4337 بالكامل.
+
+## 🆕 Latest Deployment (July 2024)
+
+### New SimpleAccount Deployment
+
+**Contract Address:** `0xF51494f3c686c46ADe7Cb308e4438D61d6CBA3D5`  
+**Owner:** `0x742d35Cc6634C0532925A3B8D4C9dB96C4B4d8B6`  
+**EntryPoint:** `0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789`  
+**Transaction Hash:** `0x1ccc36797527dc85d004fa2ddcf4318e6c38a3832aa6a3e5c517b266545acc80`  
+**Gas Used:** 1,886,994 gas  
+**Cost:** 0.018183235595579766 ETH  
+**Block:** 8672718  
+**Status:** ✅ Deployed & Verified
+
+**Etherscan:** [View Contract](https://sepolia.etherscan.io/address/0xF51494f3c686c46ADe7Cb308e4438D61d6CBA3D5)
+
+### Deployment Script Features
+
+- ✅ Professional logging with `console.logAddress`
+- ✅ Environment variable validation
+- ✅ Automatic deployment verification
+- ✅ Comprehensive validation checks
+- ✅ Gas usage tracking
+- ✅ Production-ready deployment process
