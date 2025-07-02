@@ -42,7 +42,16 @@ contract EntryPoint is IEntryPoint {
                     keccak256(userOp.paymasterAndData)
                 )
             );
-            uint256 missingAccountFunds = 0; // Placeholder for paymaster logic
+            uint256 startGas = gasleft();
+            uint256 prefund = userOp.callGasLimit * tx.gasprice;
+            uint256 deposit = _deposits[userOp.sender];
+            uint256 missingAccountFunds = deposit >= prefund
+                ? 0
+                : prefund - deposit;
+            if (missingAccountFunds > 0) {
+                // محاكاة استقبال الإيثر من المستخدم
+                _deposits[userOp.sender] += missingAccountFunds;
+            }
             bool success = false;
             uint256 actualGasCost = 0;
             uint256 actualGasUsed = 0;
@@ -53,7 +62,6 @@ contract EntryPoint is IEntryPoint {
                     missingAccountFunds
                 )
             returns (uint256 validationResult) {
-                // If validation passes, execute the call
                 (success, ) = userOp.sender.call{gas: userOp.callGasLimit}(
                     userOp.callData
                 );
@@ -66,6 +74,14 @@ contract EntryPoint is IEntryPoint {
                 );
                 continue;
             }
+            actualGasUsed = startGas - gasleft();
+            actualGasCost = actualGasUsed * tx.gasprice;
+            // خصم تكلفة الغاز من رصيد المستخدم وتحويلها للـ beneficiary
+            if (_deposits[userOp.sender] >= actualGasCost) {
+                _deposits[userOp.sender] -= actualGasCost;
+                (bool sent, ) = beneficiary.call{value: actualGasCost}("");
+                require(sent, "Failed to send gas cost to beneficiary");
+            }
             emit UserOperationEvent(
                 userOpHash,
                 userOp.sender,
@@ -76,7 +92,6 @@ contract EntryPoint is IEntryPoint {
                 actualGasUsed
             );
         }
-        // Placeholder: send fees to beneficiary if needed
     }
 
     /// @inheritdoc IEntryPoint
