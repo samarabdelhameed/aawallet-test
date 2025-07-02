@@ -129,8 +129,8 @@ forge test -vvv
 
 | Contract           | Address                                      | Status                 | Etherscan                                                                               |
 | ------------------ | -------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
-| **EntryPoint**     | `0xef78742Ba63f2eC1533E7A3Dfe83120eb3EB99aa` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0xef78742Ba63f2eC1533E7A3Dfe83120eb3EB99aa) |
-| **AccountFactory** | `0xA292D4505aD066378b8335f7C1479a0216D89F2e` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0xA292D4505aD066378b8335f7C1479a0216D89F2e) |
+| **EntryPoint**     | `0x2A84294B123b7d48c5EB72FDf13ad035569d2a95` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0x2A84294B123b7d48c5EB72FDf13ad035569d2a95) |
+| **AccountFactory** | `0x33139e3E4E5053A6efb1EA1e5c5054e5B4948B56` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0x33139e3E4E5053A6efb1EA1e5c5054e5B4948B56) |
 | **SimpleAccount**  | `0xb3946cdC44ed9111e8f69B9d597455810FFdc4e7` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0xb3946cdC44ed9111e8f69B9d597455810FFdc4e7) |
 
 ### Deployment Details
@@ -230,3 +230,60 @@ For support and questions:
 ---
 
 **Note**: This is a testnet deployment. For mainnet deployment, ensure thorough testing and security audits.
+
+## 🏆 خطوات العمل الاحترافية (Professional Workflow)
+
+1. **تنظيف المشروع من الملفات المؤقتة:**
+
+   ```bash
+   rm -rf cache out && find broadcast -type f -name '*.json' -delete
+   ```
+
+   > يضمن أن البناء والاختبار يتمان على كود نظيف.
+
+2. **بناء العقود:**
+
+   ```bash
+   forge build
+   ```
+
+   > يتأكد من عدم وجود أخطاء تجميعية.
+
+3. **تشغيل جميع الاختبارات (100% نجاح):**
+
+   ```bash
+   forge test -vvv
+   ```
+
+   > جميع اختبارات الحماية، الأداء، العمليات الجماعية، والتكامل ناجحة.
+
+4. **النشر على شبكة Sepolia:**
+
+   - EntryPoint:
+     ```bash
+     forge script script/EntryPoint.s.sol:EntryPointDeploy --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast
+     ```
+   - AccountFactory:
+     ```bash
+     forge script script/AccountFactory.s.sol:AccountFactoryDeploy --rpc-url $RPC_URL --private-key $PRIVATE_KEY --broadcast
+     ```
+     > SimpleAccount يُنشر عبر AccountFactory تلقائياً عند إنشاء حساب جديد.
+
+5. **توثيق العقود على Etherscan:**
+   ```bash
+   forge verify-contract --chain-id 11155111 <ADDRESS> src/<Contract>.sol:<Contract> --etherscan-api-key $ETHERSCAN_API_KEY
+   ```
+   > تم التوثيق بنجاح للعقود المنشورة.
+
+---
+
+## 📍 Deployment Results (Sepolia)
+
+| Contract           | Address                                      | Status                 | Etherscan                                                                               |
+| ------------------ | -------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------- |
+| **EntryPoint**     | `0x2A84294B123b7d48c5EB72FDf13ad035569d2a95` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0x2A84294B123b7d48c5EB72FDf13ad035569d2a95) |
+| **AccountFactory** | `0x33139e3E4E5053A6efb1EA1e5c5054e5B4948B56` | ✅ Deployed & Verified | [View](https://sepolia.etherscan.io/address/0x33139e3E4E5053A6efb1EA1e5c5054e5B4948B56) |
+
+- **تم نشر العقود بنجاح وتوثيقها على Etherscan.**
+- جميع الاختبارات ناجحة 100%.
+- الكود متوافق مع ERC-4337 بالكامل.
